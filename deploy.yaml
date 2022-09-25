@@ -4,11 +4,12 @@ metadata:
   labels:
     app: my-dep
     c: true
+    d: 1
   name: my-dep
   namespace: default
 spec:
   progressDeadlineSeconds: 600
-  replicas: 1
+  replicas: 2
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -30,3 +31,18 @@ spec:
         image: busybox
         imagePullPolicy: Always
         name: busybox
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi
+spec:
+  suspend: true
+  template:
+    spec:
+      containers:
+      - name: pi
+        image: perl:5.34.0
+        command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
+      restartPolicy: Never
+  backoffLimit: 4
